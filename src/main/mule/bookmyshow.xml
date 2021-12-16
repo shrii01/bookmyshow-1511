@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+	<flow name="BookTicket" doc:id="5622c07b-9853-4497-8df9-3b718621009e" >
+		<http:listener doc:name="/BookTicket" doc:id="39907b0e-5b8e-4c07-b41c-c26c5991528f" config-ref="Listener" path="/BookMyShow/BookTicket"/>
+		<ee:transform doc:name="Transform Message" doc:id="32f599fc-9bed-4645-a897-c9d6204ef8a0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns book http://www.example.org/BookingService/
+---
+book#BookTicket: payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume operation="BookTicket" doc:name="Consume" doc:id="b17c0be3-5b9f-4c2b-8f91-0383c4745d4d" config-ref="SoapService_Consumer" />
+		<ee:transform doc:name="Transform Message" doc:id="890c246c-c776-4bf0-9b4b-0f18fa1a1513" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+ns book http://www.example.org/BookingService/
+---
+payload.book#body]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="347a62f9-c9dc-4399-8a8b-18e2d3518c3e" type="ANY">
+				<ee:transform doc:name="Transform Message" doc:id="0afb18fb-08f8-40a6-9796-becc40d004f0" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message:"An Error occured!Please try again"
+}
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="MovieDetails" doc:id="617042a9-3442-4125-99a8-ffc7b8446d27" >
+		<http:listener doc:name="/MovieDisplay" doc:id="b7ab8dca-19fa-4da1-b86d-927f9d097a76" config-ref="Listener" path="/BookMyShow/MovieDisplay"/>
+		<http:request method="GET" doc:name="Request" doc:id="45080227-ad42-4417-ae75-06db6d27c5d7" config-ref="Rest_Requestor" path="/movies/displayofmovies"/>
+		<ee:transform doc:name="Transform Message" doc:id="e26b7bf5-5cb6-406a-9dca-a0e2a777113c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+if(isEmpty(payload)){
+	"message":"No Movies to display"
+}else
+{
+	"Movies":payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="2722ce53-0cce-4757-9b8e-0b427d34eceb" type="ANY" >
+				<ee:transform doc:name="Transform Message" doc:id="a3ce4ab1-3a6b-4369-87cb-05526517585b" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message:"An Error occured!Please try again"
+}
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="ShowDetails" doc:id="beec3c29-d9c4-4bc2-9931-a192b0fdbc9c" >
+		<http:listener doc:name="/ShowDetails" doc:id="597e886a-ee3a-43f4-84ef-0cb211f2e511" config-ref="Listener" path="/BookMyShow/ShowDetails"/>
+		<http:request method="GET" doc:name="Request" doc:id="8d270900-5250-49b7-b297-d7ba8f5c40b9" config-ref="Rest_Requestor" path="/movies/shows">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	 "city" : attributes.queryParams.city,
+	("title" : attributes.queryParams.title) if (attributes.queryParams.title != null),
+	("format" : attributes.queryParams.format) if (attributes.queryParams.format != null)
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="8e4a9edb-ff3d-460d-b415-be6a52fa3f85" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+if(isEmpty(payload)){
+	"message":"No Shows to display"
+}else
+{
+	"Shows":payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="969f9c15-51d6-462b-b43c-5adb6c103205" type="ANY" >
+				<ee:transform doc:name="Transform Message" doc:id="6707c5b4-0ad2-4136-abd6-a3a5a000ea42" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message:"An Error occured!Please try again"
+}
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>

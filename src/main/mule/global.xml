@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
+	<http:listener-config name="Listener" doc:name="HTTP Listener config" doc:id="ba7a9a7d-3283-435d-9843-c05ad6ad2efa" >
+		<http:listener-connection host="0.0.0.0" port="8081" readTimeout="300000"/>
+	</http:listener-config>
+	<wsc:config name="SoapService_Consumer" doc:name="Web Service Consumer Config" doc:id="54b8c520-aa08-4de4-b0ff-7b33cd80bb13" >
+		<wsc:connection wsdlLocation="http://bookingservice1511.us-e2.cloudhub.io/BookingService/BookingServiceSOAP?wsdl" service="BookingService" port="BookingServiceSOAP" address="http://bookingservice1511.us-e2.cloudhub.io/BookingService/BookingServiceSOAP" >
+			<wsc:custom-transport-configuration >
+				<wsc:default-http-transport-configuration timeout="100000" />
+			</wsc:custom-transport-configuration>
+			<wsc:web-service-security actor="http://schemas.xmlsoap.org/soap/actor/next" />
+		</wsc:connection>
+	</wsc:config>
+	<http:request-config name="Rest_Requestor" doc:name="HTTP Request configuration" doc:id="5f658277-ebf2-4170-9b1a-8ab117591162" basePath="/api" >
+		<http:request-connection host="movieservice1511.us-e2.cloudhub.io" />
+		<http:default-headers >
+			<http:default-header key="client_id" value="450669da843d42dda47ecc1d9b8d4f3c" />
+			<http:default-header key="client_secret" value="262B7B183731407F8670bE143Bdf8c45" />
+		</http:default-headers>
+	</http:request-config>
+	
+</mule>

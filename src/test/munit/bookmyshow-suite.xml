@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="bookmyshow-suite.xml" />
+	<munit:test name="bookmyshowFlow-test" doc:id="5e6d4baf-10f0-4233-b2fb-07b6a9d9c6d5" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Consume" doc:id="75b91947-0443-4b2f-95f1-87bd70edda1c" processor="wsc:consume">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="a7085fbd-23fd-4af3-83d5-1def8aa705cd" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://bookmyshowFlowtest\mock_payload.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://bookmyshowFlowtest\mock_attributes.dwl')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="22948e9d-9f62-4e71-82fa-085242354699" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://bookmyshowFlowtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://bookmyshowFlowtest\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to bookmyshowFlow" doc:id="bf36c388-0a20-4824-9a4f-b05abe7d658a" name="BookTicket"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="b0c29bec-c498-4386-8f5f-84f8ba83a137" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import bookmyshowFlowtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="bookmyshowFlow1-test" doc:id="88b07b00-87b6-4aa6-a727-6cf14f3a07e7" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Request" doc:id="96a1ca1b-290b-4cbd-bfa1-a8456006c49b" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="45080227-ad42-4417-ae75-06db6d27c5d7" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://bookmyshowFlow1test\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://bookmyshowFlow1test\mock_attributes.dwl')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="68db564b-cddd-4409-b61e-3d409536c9a5" >
+				<munit:payload value="#[readUrl('classpath://bookmyshowFlow1test\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://bookmyshowFlow1test\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to bookmyshowFlow1" doc:id="2167f26e-b69e-437f-8a90-db312bd878e9" name="MovieDetails"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="ae275794-d4df-4192-a1d5-7946edcf159f" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import bookmyshowFlow1test::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="bookmyshowFlow2-test" doc:id="e2a4ed01-a12d-42c7-bbf1-498de9f98152" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Request" doc:id="ba3f028a-9ac2-4973-b387-82740d4e5c30" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="8d270900-5250-49b7-b297-d7ba8f5c40b9" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://bookmyshowFlow2test\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://bookmyshowFlow2test\mock_attributes.dwl')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy Transform Message" doc:id="ca2cab48-4b9a-45db-bc0a-f2737cdc5517" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="8e4a9edb-ff3d-460d-b415-be6a52fa3f85" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="275c4ac6-0824-4eec-b18d-da83a7e11723" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import bookmyshowFlow2test::spy_assert_payload
+---
+spy_assert_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="fdf1b434-0f16-4bbc-b87e-4b1b8b147cb2" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import bookmyshowFlow2test::spy_assert_payload1
+---
+spy_assert_payload1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit:set-event doc:name="Set Input" doc:id="a647db45-2d47-48e7-9f83-f99a9ea8bba7" >
+				<munit:payload value="#[readUrl('classpath://bookmyshowFlow2test\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://bookmyshowFlow2test\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to bookmyshowFlow2" doc:id="338bdefe-a500-411e-9199-8844acd53ba4" name="ShowDetails"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="8c931633-698b-4180-9cde-130988fad235" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import bookmyshowFlow2test::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify Transform Message" doc:id="37339ec6-268e-4497-bef6-f5ff09950810" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="8e4a9edb-ff3d-460d-b415-be6a52fa3f85" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
